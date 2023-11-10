@@ -1,0 +1,106 @@
+imports:
+    - { resource: "@SyliusCoreBundle/Resources/config/app/config.yml" }
+
+    - { resource: "@BitBagSyliusCmsPlugin/Resources/config/config.yml" }
+    - { resource: "@BitBagSyliusWishlistPlugin/Resources/config/config.yml" }
+
+    - { resource: "@SyliusAdminBundle/Resources/config/app/config.yml" }
+    - { resource: "@SyliusApiBundle/Resources/config/app/config.yaml" }
+
+    - { resource: "@SyliusShopBundle/Resources/config/app/config.yml" }
+
+    - { resource: "./../../src/Component/Core/Admin/Resources/config.yaml" }
+    - { resource: "./../../src/Component/Core/Common/Resources/config.yaml" }
+    - { resource: "./../../src/Component/Core/Shop/Resources/config.yaml" }
+    - { resource: "./../../src/Component/Core/Vendor/Resources/config.yaml" }
+    - { resource: "./../../src/Component/Override/Resources/config.yaml" }
+
+parameters:
+    sylius_core.public_dir: '%kernel.project_dir%/public'
+
+sylius_shop:
+    product_grid:
+        include_all_descendants: true
+
+sylius_order:
+    resources:
+        order:
+            classes:
+                model: BitBag\OpenMarketplace\Component\Order\Entity\Order
+                controller: BitBag\OpenMarketplace\Component\Core\Common\Controller\Resource\OrderController
+                repository: BitBag\OpenMarketplace\Component\Order\Repository\OrderRepository
+                form: Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType\OrderType
+        order_item:
+            classes:
+                model: BitBag\OpenMarketplace\Component\Order\Entity\OrderItem
+
+sylius_product:
+    resources:
+        product:
+            classes:
+                model: BitBag\OpenMarketplace\Component\Product\Entity\Product
+                interface: BitBag\OpenMarketplace\Component\Product\Entity\ProductInterface
+                repository: BitBag\OpenMarketplace\Component\Product\Repository\ProductRepository
+        product_variant:
+            classes:
+                repository: BitBag\OpenMarketplace\Component\Product\Repository\ProductVariantRepository
+
+sylius_user:
+    resources:
+        shop:
+            user:
+                classes:
+                    model: BitBag\OpenMarketplace\Component\Vendor\Entity\ShopUser
+                    interface: BitBag\OpenMarketplace\Component\Vendor\Entity\ShopUserInterface
+
+sylius_shipping:
+    resources:
+        shipment:
+            classes:
+                model: BitBag\OpenMarketplace\Component\Order\Entity\Shipment
+                interface: BitBag\OpenMarketplace\Component\Order\Entity\ShipmentInterface
+                repository: BitBag\OpenMarketplace\Component\Order\Repository\ShipmentRepository
+
+sylius_payment:
+    resources:
+        payment:
+            classes:
+                repository: BitBag\OpenMarketplace\Component\Order\Repository\PaymentRepository
+
+sylius_customer:
+    resources:
+        customer:
+            classes:
+                repository: BitBag\OpenMarketplace\Component\Vendor\Repository\CustomerRepository
+
+sylius_review:
+    resources:
+        product:
+            review:
+                classes:
+                    repository: BitBag\OpenMarketplace\Component\Product\Repository\ProductReviewRepository
+
+sylius_taxonomy:
+    resources:
+        taxon:
+            classes:
+                model: Sylius\Component\Core\Model\Taxon
+                repository: BitBag\OpenMarketplace\Component\Vendor\Repository\TaxonRepository
+
+sylius_ui:
+    events:
+        sylius.shop.checkout.header:
+            blocks:
+                before_header_legacy:
+                    template: "@SyliusUi/Block/_legacySonataEvent.html.twig"
+                    priority: 15
+                    context:
+                        event: sylius.shop.checkout.address.before_header # Intentionally using "address" event for backwards compatibility
+                header:
+                    template: "@SyliusShop/Checkout/_header.html.twig"
+                    priority: 10
+                after_header_legacy:
+                    template: "@SyliusUi/Block/_legacySonataEvent.html.twig"
+                    priority: 5
+                    context:
+                        event: sylius.shop.checkout.address.after_header # Intentionally using "address" event for backwards compatibility

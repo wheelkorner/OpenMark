@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <service class="Tests\BitBag\OpenMarketplace\Behat\Context\Setup\ProductContext"
+                 id="tests.open_marketplace.behat.context.setup.product" public="true">
+            <argument type="service" id="sylius.fixture.example_factory.shop_user"/>
+            <argument type="service" id="bitbag.open_marketplace.component.vendor.repository.vendor"/>
+            <argument type="service" id="sylius.repository.product_variant"/>
+            <argument type="service" id="bitbag.open_marketplace.component.product.repository.product"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="sylius.fixture.example_factory.product"/>
+            <argument type="service" id="sylius.fixture.example_factory.taxon"/>
+            <argument type="service" id="sylius.behat.shared_storage"/>
+            <argument type="service" id="sylius.repository.shipping_method"/>
+            <argument type="service" id="sylius.generator.slug"/>
+            <argument type="service" id="sylius.product_variant_resolver.default"/>
+            <argument type="service" id="sylius.custom_factory.product"/>
+            <argument type="service" id="sylius.factory.channel_pricing"/>
+            <argument type="service" id="bitbag.open_marketplace.component.core.common.fixture.factory.vendor"/>
+            <argument type="service" id="sylius.repository.shop_user"/>
+        </service>
+
+    </services>
+</container>

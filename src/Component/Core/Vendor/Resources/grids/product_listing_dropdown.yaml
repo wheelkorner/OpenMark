@@ -1,0 +1,4 @@
+sylius_grid:
+  templates:
+    action:
+      product_listing_dropdown: "Configuration/Grid/Vendor/Action/productListingDropdown.html.twig"

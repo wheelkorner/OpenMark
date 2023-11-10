@@ -1,0 +1,39 @@
+/vendor/
+/node_modules/
+/composer.lock
+
+/etc/build/*
+!/etc/build/.gitignore
+
+/tests/Application/yarn.lock
+/tests/Application/public/uploads
+/.phpunit.result.cache
+/behat.yml
+/phpspec.yml
+/phpunit.xml
+.idea/
+
+/public/assets
+/public/build
+/public/css
+/public/js
+/public/media/*
+!/public/media/image/
+/public/media/image/*
+!/public/media/image/.gitignore
+
+/node_modules
+
+###> symfony/framework-bundle ###
+
+.env.*.local
+.env.local
+.env.local.php
+/public/bundles
+/public/uploads/message_files
+/var/
+###< symfony/framework-bundle ###
+
+###> symfony/web-server-bundle ###
+/.web-server-pid
+###< symfony/web-server-bundle ###

@@ -1,0 +1,8 @@
+{
+    "@context": "\/api\/v2\/contexts\/VendorLogo",
+    "@id": "\/api\/v2\/shop\/account\/vendor\/logo\/@string@",
+    "@type": "VendorLogo",
+    "uuid": "@string@",
+    "path": "@string@\/avatar.png",
+    "owner": "\/api\/v2\/shop\/vendors\/@string@"
+}

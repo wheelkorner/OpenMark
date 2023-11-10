@@ -1,0 +1,9 @@
+framework:
+    validation:
+        enable_annotations: true
+        mapping:
+            paths:
+            - '%kernel.project_dir%/src/Component/Core/Api/Resources/validation/'
+            - '%kernel.project_dir%/src/Component/Core/Shop/Resources/validation/'
+            - '%kernel.project_dir%/src/Component/ProductListing/Resources/validation/'
+            - '%kernel.project_dir%/src/Component/Vendor/Resources/validation/'

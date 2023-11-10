@@ -1,0 +1,30 @@
+{% import "@SyliusShop/Common/Macro/money.html.twig" as money %}
+{% if order.hasPayments %}
+    <div class="ui segment" id="payment-state">
+        {% include '@SyliusAdmin/Order/Label/PaymentState/' ~ order.paymentState ~ '.html.twig' with { 'value': 'sylius.ui.' ~ order.paymentState, 'attached': true } %}
+        <h3 class="ui dividing header">{{ 'sylius.ui.payments'|trans }}</h3>
+        <div class="ui relaxed divided list" id="sylius-payments">
+            {% for payment in order.payments %}
+                <div class="item">
+                    <div class="right floated content">
+                        {% include '@SyliusAdmin/Common/Label/paymentState.html.twig' with {'data': payment.state} %}
+                    </div>
+                    <div class="content">
+                        <div class="header">
+                            <i class="large payment icon"></i>{{ payment.method }}
+                        </div>
+                        <div class="description">
+                            {{ money.format(payment.amount, payment.order.currencyCode) }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <div class="ui segment center aligned" id="no-payments">
+    <span class="ui grey large label">
+        <i class="ban icon"></i> {{ 'sylius.ui.no_payments'|trans }}
+    </span>
+    </div>
+{% endif %}

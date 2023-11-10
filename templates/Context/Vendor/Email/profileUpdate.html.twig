@@ -1,0 +1,21 @@
+{% extends '@SyliusCore/Email/layout.html.twig' %}
+
+{% block subject %}
+   {{ 'open_marketplace.email.vendor_profile_update'|trans }}
+{% endblock %}
+
+{% block body %}
+   <div>
+      {{ 'open_marketplace.email.request_profile_update_greeting' | trans }}
+   </div>
+   <br/>
+   <div>
+      {{ 'open_marketplace.email.request_profile_update_info' | trans }}
+   </div>
+   <br />
+   <div>
+      <a href="{{ url('open_marketplace_vendor_profile_confirm_link',{'token': token}) }} ">
+         {{ url('open_marketplace_vendor_profile_confirm_link',{'token': token}) }}
+      </a>
+   </div>
+{% endblock %}
