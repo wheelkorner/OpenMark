@@ -54,3 +54,13 @@ sylius_shop_order_thank_you:
         _controller: sylius.controller.order:thankYouAction
         _sylius:
             template: "Context/Shop/Checkout/thankYou.html.twig"
+
+kangu_shipping:
+    path: /{_locale}/kangu
+    methods: [GET]
+    requirements:
+        _locale: ^[A-Za-z]{2,4}(_([A-Za-z]{4}|[0-9]{3}))?(_([A-Za-z]{2}|[0-9]{3}))?$
+    defaults:
+        _controller: 'sylius.controller.order:getKanguSimular'
+        _sylius:
+            template: "Context/Shop/Checkout/kanguShipping.html.twig"

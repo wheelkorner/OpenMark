@@ -1,0 +1,45 @@
+{# kanguShipping.html.twig #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kangu Shipping</title>
+</head>
+<body>
+    <h1>Resultados do Frete</h1>
+
+    {% for frete in dados %}
+        <div>
+            <h2>{{ frete.transp_nome }}</h2>
+            <p>Descrição: {{ frete.descricao }}</p>
+            <p>Valor do Frete: R$ {{ frete.vlrFrete }}</p>
+            <p>Prazo de Entrega: {{ frete.prazoEnt }} dias</p>
+            <p>Data de Previsão de Entrega: {{ frete.dtPrevEnt|date("Y-m-d H:i:s") }}</p>
+
+            {% if frete.alertas is not null %}
+                <p>Alertas: {{ frete.alertas|join(', ') }}</p>
+            {% endif %}
+
+            {% if frete.servico == 'R' %}
+                <p>Locais de Retirada:</p>
+                {% for pontoRetira in frete.pontosRetira %}
+                    <div>
+                        <h3>{{ pontoRetira.nome }}</h3>
+                        <p>Endereço: {{ pontoRetira.endereco.logradouro }}, {{ pontoRetira.endereco.numero }} - {{ pontoRetira.endereco.bairro }}, {{ pontoRetira.endereco.cidade }}/{{ pontoRetira.endereco.uf }} CEP: {{ pontoRetira.endereco.cep }}</p>
+                        <p>Contato: {{ pontoRetira.contato }}, Telefone: {{ pontoRetira.telefone }}, Celular: {{ pontoRetira.celular }}</p>
+                        <p>Horários:</p>
+                        {% for horario in pontoRetira.horarios %}
+                            <p>{{ horario.dia }} - Abre: {{ horario.abre }}, Fecha: {{ horario.fecha }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <hr>
+        </div>
+    {% endfor %}
+</body>
+</html>

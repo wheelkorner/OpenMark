@@ -16,13 +16,20 @@ use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
 use Sylius\Bundle\ShippingBundle\Form\Type\ShipmentShipType;
 use Sylius\Component\Resource\Exception\UpdateHandlingException;
 use Sylius\Component\Resource\ResourceActions;
+
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Webmozart\Assert\Assert;
 
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Client;
+
 final class OrderController extends BaseOrderController
 {
+
     public function indexAction(Request $request): Response
     {
         $configuration = $this->requestConfigurationFactory->create($this->metadata, $request);
@@ -191,4 +198,74 @@ final class OrderController extends BaseOrderController
             ]
         );
     }
+
+    public function getKanguSimular(): Response
+    {
+        $url = "https://portal.kangu.com.br/tms/transporte/simular";
+        $token = "c3c2971bd4a106ba7b9e30c3e428814d88d2c335d80d225e5337df81419089cf";
+        
+        $requestData = [
+            "cepOrigem" => "80420080",
+            "cepDestino" => "80020134",
+            "vlrMerc" => 10,
+            "pesoMerc" => 10,
+            "volumes" => [
+                [
+                    "peso" => 10,
+                    "altura" => 10,
+                    "largura" => 10,
+                    "comprimento" => 10,
+                    "tipo" => "string",
+                    "valor" => 10,
+                    "quantidade" => 1
+                ]
+            ],
+            "produtos" => [
+                [
+                    "peso" => 10,
+                    "altura" => 10,
+                    "largura" => 10,
+                    "comprimento" => 10,
+                    "valor" => 10,
+                    "quantidade" => 1
+                ]
+            ],
+            "servicos" => ["string"],
+            "ordernar" => "string"
+        ];
+
+        $headers = [
+            "accept" => "application/json",
+            "token" => $token,
+            "Content-Type" => "application/json",
+        ];
+
+        try {
+            $client = new \GuzzleHttp\Client();
+
+            $response = $client->post($url, [
+                'headers' => $headers,
+                'json' => $requestData,
+            ]);
+
+            $bodyContents = $response->getBody()->getContents();
+            $data = json_decode($bodyContents, true);
+
+            // return $this->render('kanguShipping.html.twig', ['dados' => $data]);
+            return $this->render('Context/Shop/Checkout/kanguShipping.html.twig', ['dados' => $data]);
+
+
+        } catch (RequestException $e) {
+            // Trate a exceção, se necessário
+            $statusCode = $e->getResponse()->getStatusCode();
+            $errorMessage = $e->getMessage();
+
+            // Faça algo com o erro...
+
+            return $this->render('erro.html.twig', ['statusCode' => $statusCode, 'errorMessage' => $errorMessage]);
+        }
+    }
+
+
+
 }
