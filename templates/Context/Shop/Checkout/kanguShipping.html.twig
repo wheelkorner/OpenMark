@@ -1,45 +1,87 @@
-{# kanguShipping.html.twig #}
+<div class="container">
+    <section class="section">
+        <div class="project-container">
+        {% for frete in dados %}
+                <div class="project-box" onclick="$('#modalExample').modal('hide');" >
+                <h3>{{ frete.transp_nome }}</h3>
+                <label><strong>{{ frete.descricao }}</strong></label>
+                <label>Valor Frete:<strong> $ {{ frete.vlrFrete }} </strong></label>
+                <label>Prazo Entrega: {{ frete.prazoEnt }} dias</label>
+                <label>Previsão Entrega: {{ frete.dtPrevEnt|date("d/m/Y") }}</label>
+                </div>
+        {% endfor %}
+            </div>
+    </section>
+</div>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kangu Shipping</title>
-</head>
-<body>
-    <h1>Resultados do Frete</h1>
+<style>
 
-    {% for frete in dados %}
-        <div>
-            <h2>{{ frete.transp_nome }}</h2>
-            <p>Descrição: {{ frete.descricao }}</p>
-            <p>Valor do Frete: R$ {{ frete.vlrFrete }}</p>
-            <p>Prazo de Entrega: {{ frete.prazoEnt }} dias</p>
-            <p>Data de Previsão de Entrega: {{ frete.dtPrevEnt|date("Y-m-d H:i:s") }}</p>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200&display=swap');
 
-            {% if frete.alertas is not null %}
-                <p>Alertas: {{ frete.alertas|join(', ') }}</p>
-            {% endif %}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
 
-            {% if frete.servico == 'R' %}
-                <p>Locais de Retirada:</p>
-                {% for pontoRetira in frete.pontosRetira %}
-                    <div>
-                        <h3>{{ pontoRetira.nome }}</h3>
-                        <p>Endereço: {{ pontoRetira.endereco.logradouro }}, {{ pontoRetira.endereco.numero }} - {{ pontoRetira.endereco.bairro }}, {{ pontoRetira.endereco.cidade }}/{{ pontoRetira.endereco.uf }} CEP: {{ pontoRetira.endereco.cep }}</p>
-                        <p>Contato: {{ pontoRetira.contato }}, Telefone: {{ pontoRetira.telefone }}, Celular: {{ pontoRetira.celular }}</p>
-                        <p>Horários:</p>
-                        {% for horario in pontoRetira.horarios %}
-                            <p>{{ horario.dia }} - Abre: {{ horario.abre }}, Fecha: {{ horario.fecha }}</p>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-            {% endif %}
+.section {
+    padding-block: 20px;
+}
 
-            <hr>
-        </div>
-    {% endfor %}
-</body>
-</html>
+h3 {
+    font-size: 20px;
+    font-weight: 300;
+    margin-bottom: 15px;
+}
+
+.container {
+    width: 100%;
+    position: relative;
+}
+
+.project-container {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.project-box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 23%;
+    height: 200px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 1px 8px 10px 2px gray;
+    overflow: hidden;
+}
+
+.project-box label, p {
+    font-size: 15px;
+    color: #777;
+}
+.project-box::after {
+    content: '';
+    position: absolute;
+    bottom: -100%;
+    background: #f1f1f1;
+    width: 100%;
+    height: 100%;
+    transition: .4s;
+    z-index: 1;
+}
+.project-box:hover.project-box::after{
+    bottom: 0;
+}
+.project-box:hover.project-box i,
+.project-box:hover.project-box>h3,
+.project-box:hover.project-box>label {
+    color: #4183c4;
+    z-index: 2;
+}
+</style>

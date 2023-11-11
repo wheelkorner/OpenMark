@@ -27,6 +27,8 @@ use Webmozart\Assert\Assert;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
 
+use Symfony\Component\Dotenv\Dotenv;
+
 final class OrderController extends BaseOrderController
 {
 
@@ -201,8 +203,11 @@ final class OrderController extends BaseOrderController
 
     public function getKanguSimular(): Response
     {
-        $url = "https://portal.kangu.com.br/tms/transporte/simular";
-        $token = "c3c2971bd4a106ba7b9e30c3e428814d88d2c335d80d225e5337df81419089cf";
+        $dotenv = new Dotenv();
+        $dotenv->load('/srv/open_marketplace/.env');
+        
+        $url = $_ENV['KANGU_API_URL'].'simular';
+        $token = $_ENV['KANGU_API_KEY'];
         
         $requestData = [
             "cepOrigem" => "80420080",
@@ -251,9 +256,7 @@ final class OrderController extends BaseOrderController
             $bodyContents = $response->getBody()->getContents();
             $data = json_decode($bodyContents, true);
 
-            // return $this->render('kanguShipping.html.twig', ['dados' => $data]);
             return $this->render('Context/Shop/Checkout/kanguShipping.html.twig', ['dados' => $data]);
-
 
         } catch (RequestException $e) {
             // Trate a exceção, se necessário
@@ -265,7 +268,4 @@ final class OrderController extends BaseOrderController
             return $this->render('erro.html.twig', ['statusCode' => $statusCode, 'errorMessage' => $errorMessage]);
         }
     }
-
-
-
 }
