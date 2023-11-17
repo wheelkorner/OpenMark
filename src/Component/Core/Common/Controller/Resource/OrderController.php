@@ -28,6 +28,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
 
 use Symfony\Component\Dotenv\Dotenv;
+use Sylius\Component\Core\Model\ProductVariantInterface;
 
 final class OrderController extends BaseOrderController
 {
@@ -203,40 +204,68 @@ final class OrderController extends BaseOrderController
 
     public function getKanguSimular(): Response
     {
-        $dotenv = new Dotenv();
-        $dotenv->load('/srv/open_marketplace/.env');
+        $productVariantRepository = $this->getDoctrine()->getRepository(ProductVariantInterface::class);
+        $productVariant = $productVariantRepository->find(1);
+
+        $costumer = $this->container->get('bitbag.open_marketplace.component.vendor.repository.vendor')->find(3);
+        $cepDestino= $costumer->getVendorAddress()->getPostalCode();
+
+        $vendor = $this->container->get('bitbag.open_marketplace.component.vendor.context.vendor')->getVendor();
+        $vendorAddress = $vendor->getVendorAddress();
+
+        if (!$vendorAddress->__isInitialized()) {
+            $vendorAddress->__load();
+        }
+
+        $cepOrigem = $vendorAddress->getPostalCode();
+        // $dotenv = new Dotenv();
+        // $dotenv->load('/srv/open_marketplace/.env');
         
-        $url = $_ENV['KANGU_API_URL'].'simular';
-        $token = $_ENV['KANGU_API_KEY'];
+        // $url = $_ENV['KANGU_API_URL'].'simular';
+        // $token = $_ENV['KANGU_API_KEY'];
+
+        $url = "https://portal.kangu.com.br/tms/transporte/simular";
+        $token = "c3c2971bd4a106ba7b9e30c3e428814d88d2c335d80d225e5337df81419089cf";
         
         $requestData = [
-            "cepOrigem" => "80420080",
-            "cepDestino" => "80020134",
-            "vlrMerc" => 10,
-            "pesoMerc" => 10,
+            "cepOrigem" => $cepOrigem, // Obrigatorio
+            "cepDestino" => $cepDestino, // Obrigatorio
+
+            "vlrMerc" => 0.01, // Não aceita zero - Nem valores acima de 10.000,00
+            "pesoMerc" => 0,// sem validacao
             "volumes" => [
                 [
-                    "peso" => 10,
-                    "altura" => 10,
-                    "largura" => 10,
-                    "comprimento" => 10,
+                    "peso" => 0,// $productVariant->getWeight(), // sem validacao
+                    "altura" => 0,// $productVariant->getHeight(), // sem validacao
+                    "largura" => 0, //$productVariant->getWidth(), // sem validacao
+                    "comprimento" => 0, //$productVariant->getDepth(), // sem validacao
                     "tipo" => "string",
-                    "valor" => 10,
-                    "quantidade" => 1
+                    "valor" => 1,
+                    "quantidade" => 0// sem validacao
                 ]
             ],
             "produtos" => [
                 [
-                    "peso" => 10,
-                    "altura" => 10,
-                    "largura" => 10,
-                    "comprimento" => 10,
-                    "valor" => 10,
-                    "quantidade" => 1
+                    "peso" => $productVariant->getWeight(),  // máx 30 - aceita zero
+                    "altura" => $productVariant->getHeight(), // acima de 70 taxa e máx 100 - aceita zero
+                    "largura" => $productVariant->getWidth(), // acima de 70 taxa e máx 100 - aceita zero
+                    "comprimento" => $productVariant->getDepth(), // acima de 70 taxa e máx 100 - aceita zero
+                    "valor" => 0, // Aceita zero
+                    "quantidade" => 1, // Aceita zero e o Máximo é com base na soma dos atributos dos produtos
                 ]
             ],
             "servicos" => ["string"],
             "ordernar" => "string"
+        ];
+
+
+        $entrada = [
+            'origem' => $cepOrigem,
+            'destino' => $cepDestino,
+            "peso" => $productVariant->getWeight(),
+            "altura" => $productVariant->getHeight(),
+            "largura" => $productVariant->getWidth(),
+            "comprimento" => $productVariant->getDepth(),
         ];
 
         $headers = [
@@ -253,19 +282,25 @@ final class OrderController extends BaseOrderController
                 'json' => $requestData,
             ]);
 
+            $statusCode = $response->getStatusCode();
             $bodyContents = $response->getBody()->getContents();
             $data = json_decode($bodyContents, true);
 
-            return $this->render('Context/Shop/Checkout/kanguShipping.html.twig', ['dados' => $data]);
+            if(isset($data['error'])){
+                $restricao = $data['error']['mensagem'];
+                return $this->render('Context/Shop/Checkout/kanguShipping.html.twig',['restricao' => $restricao, 'entrada' => $entrada]);
+            }
+        
+            if ($statusCode >= 200 && $statusCode < 300) {
+                $data = json_decode($bodyContents, true);
+                return $this->render('Context/Shop/Checkout/kanguShipping.html.twig', ['dados' => $data, 'entrada' => $entrada]);
+            }
 
         } catch (RequestException $e) {
-            // Trate a exceção, se necessário
             $statusCode = $e->getResponse()->getStatusCode();
             $errorMessage = $e->getMessage();
-
-            // Faça algo com o erro...
-
-            return $this->render('erro.html.twig', ['statusCode' => $statusCode, 'errorMessage' => $errorMessage]);
+            $restricao = 'Status: ' . $statusCode . ' - ' .$errorMessage;
+            return $this->render('Context/Shop/Checkout/kanguShipping.html.twig',['restricao' => $restricao, 'entrada' => $entrada]);
         }
     }
 }

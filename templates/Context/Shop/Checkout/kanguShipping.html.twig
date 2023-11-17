@@ -1,17 +1,50 @@
 <div class="container">
+    {% if entrada is defined %}
+        <p class="titulo"> Origem: {{entrada.origem}} / Destino: {{entrada.destino}} </p>
+        <p class="titulo"> Peso: {{entrada.peso}} / Altura: {{entrada.altura}} / Largura: {{entrada.largura}} / Comprimento: {{entrada.comprimento}}</p>
+    {% endif %}
+    {% if restricao is defined %}
+        <p class="titulo"> {{restricao}} </p>
+    {% else %}
     <section class="section">
         <div class="project-container">
-        {% for frete in dados %}
-                <div class="project-box" onclick="$('#modalExample').modal('hide');" >
-                <h3>{{ frete.transp_nome }}</h3>
-                <label><strong>{{ frete.descricao }}</strong></label>
-                <label>Valor Frete:<strong> $ {{ frete.vlrFrete }} </strong></label>
-                <label>Prazo Entrega: {{ frete.prazoEnt }} dias</label>
-                <label>Previsão Entrega: {{ frete.dtPrevEnt|date("d/m/Y") }}</label>
+
+            {% for frete in dados %}
+                <div class="project-box" >
+                    <h3>{{ frete.transp_nome }}</h3>
+                    <label><strong>{{ frete.descricao }}</strong></label>
+                    <label>Valor Frete:<strong> $ {{ frete.vlrFrete }} </strong></label>
+                    <label>Prazo Entrega: {{ frete.prazoEnt }} dias</label>
+                    <label>Previsão Entrega: {{ frete.dtPrevEnt|date("d/m/Y") }}</label>
+                    {% if frete.alertas is not null %}
+                        <h2>{{ frete.alertas|join(', ') }}</h2>
+                    {% endif %}
                 </div>
-        {% endfor %}
-            </div>
+            {% endfor %}
+
+            {% for frete in dados %}
+
+                    {% if frete.servico == 'R' %}
+                        {% for pontoRetira in frete.pontosRetira %}
+                            <div class="project-box1" >
+                                <h3>{{ pontoRetira.nome }}</h3>
+                                <label>{{ pontoRetira.endereco.logradouro }}, {{ pontoRetira.endereco.numero }}</label>
+                                <label>{{ pontoRetira.endereco.bairro }}, {{ pontoRetira.endereco.cidade }}/{{ pontoRetira.endereco.uf }}</label>
+                                <label>CEP: {{ pontoRetira.endereco.cep }}</label>
+                                <label>Contato: {{ pontoRetira.contato }}</label> 
+                                <label>Telefone: {{ pontoRetira.telefone }}  {{ pontoRetira.celular }} </label>
+                                <br>
+                                <h2>Horários</h2>
+                                {% for horario in pontoRetira.horarios %}
+                                    <p>{{ horario.dia }} - Abre: {{ horario.abre }}, Fecha: {{ horario.fecha }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+            {% endfor %}
+        </div>
     </section>
+    {% endif %}
 </div>
 
 <style>
@@ -31,10 +64,26 @@
 
 h3 {
     font-size: 20px;
-    font-weight: 300;
-    margin-bottom: 15px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
+h2 {
+    font-size: 14px;
+    font-weight: 600;
+    border: 2 solid;
+    z-index:2;
+    color:red;
+}
+
+.titulo {
+    font-size: 20px;
+    text-align: center;
+    margin-top: 10px;
+    color: #4183c4;
+}
 .container {
     width: 100%;
     position: relative;
@@ -57,7 +106,7 @@ h3 {
     height: 200px;
     background: white;
     border-radius: 10px;
-    box-shadow: 1px 8px 10px 2px gray;
+    box-shadow: 1px 8px 10px 2px #dcdcdc;
     overflow: hidden;
 }
 
@@ -65,6 +114,7 @@ h3 {
     font-size: 15px;
     color: #777;
 }
+
 .project-box::after {
     content: '';
     position: absolute;
@@ -78,10 +128,35 @@ h3 {
 .project-box:hover.project-box::after{
     bottom: 0;
 }
-.project-box:hover.project-box i,
 .project-box:hover.project-box>h3,
 .project-box:hover.project-box>label {
     color: #4183c4;
     z-index: 2;
 }
+
+.project-box1 {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 30%;
+    height: 450px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 1px 8px 10px 2px #dcdcdc;
+    overflow: hidden;
+}
+
+.project-box1 label {
+    font-size: 15px;
+    color: #777;
+}
+
+.project-box1 p {
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+}
+
 </style>
